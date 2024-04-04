@@ -39,6 +39,7 @@ func CheckUserLogin(w http.ResponseWriter, r *http.Request) {
 
 	generateToken(w, user.ID, user.Name, user.UserType)
 	sendSuccessResponse(w)
+	startScheduler()
 }
 
 func Logout(w http.ResponseWriter, r *http.Request) {
