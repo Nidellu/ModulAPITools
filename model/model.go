@@ -1,5 +1,7 @@
 package model
 
+import "github.com/dgrijalva/jwt-go"
+
 type User struct {
 	ID        int    `json:"id"`
 	Name      string `json:"name"`
@@ -7,6 +9,7 @@ type User struct {
 	Address   string `json:"address"`
 	Passwords string `json:"Passwords"`
 	Email     string `json:"email"`
+	UserType  int    `json:"user_type"`
 }
 
 type Product struct {
@@ -73,4 +76,11 @@ type TransactionsDetailResponse struct {
 
 type TransactionDetailResponses struct {
 	Transaction []TransactionsDetail `json:"Transactions"`
+}
+
+type Claims struct {
+	ID       int    `json: "id"`
+	Name     string `json:"name"`
+	UserType int    `json:"user_type"`
+	jwt.StandardClaims
 }

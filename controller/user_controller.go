@@ -11,6 +11,40 @@ import (
 	m "modulgo/model"
 )
 
+func CheckUserLogin(w http.ResponseWriter, r *http.Request) {
+	db := connect()
+	defer db.Close()
+
+	name := r.URL.Query().Get("name")
+	if name == "" {
+		sendUserErrorResponse(w, "")
+		return
+	}
+
+	row := db.QueryRow("SELECT * FROM users WHERE name=?", name)
+
+	var user m.User
+	if err := row.Scan(&user.ID, &user.Name, &user.Age, &user.Address, &user.Passwords, &user.Email, &user.UserType); err != nil {
+		log.Print(err)
+		sendUserErrorResponse(w, "Error")
+	} else {
+		// user.UserType = 0
+		generateToken(w, user.ID, user.Name, user.UserType)
+		sendSuccessResponse(w)
+	}
+}
+
+func Logout(w http.ResponseWriter, r *http.Request) {
+	resetUserToken(w)
+
+	var response m.UserResponse
+	response.Status = 200
+	response.Message = "Success"
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
 func GetAllUsersGorm(w http.ResponseWriter, r *http.Request) {
 	db := connectGorm()
 	defer db.Close()
