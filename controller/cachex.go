@@ -25,6 +25,7 @@ func GetUsers() []model.User {
 	if err != nil {
 		log.Println(err)
 	}
+	fmt.Println("Succeed Redis")
 	var users []model.User
 	err = json.Unmarshal([]byte(val), &users)
 	if err != nil {
