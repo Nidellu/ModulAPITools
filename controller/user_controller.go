@@ -151,7 +151,7 @@ func InsertNewUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	go func() {
-		log.Printf("New user created: %s", name)
+		SendEmail("Berhasil Insert")
 	}()
 
 	if errQuery == nil {
