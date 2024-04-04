@@ -55,15 +55,18 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 func GetAllUsersGorm(w http.ResponseWriter, r *http.Request) {
 	db := connectGorm()
 	defer db.Close()
-
 	var users []m.User
-	result := db.Find(&users)
+	users = GetUsers()
+	if users == nil {
+		result := db.Find(&users)
 
-	if result.Error != nil {
-		sendUserErrorResponse(w, "Error")
-	} else {
-		sendUserSuccessResponse(w, "Success", users)
+		if result.Error != nil {
+			sendUserErrorResponse(w, "Error")
+
+		}
+		SetUsers(users)
 	}
+	sendUserSuccessResponse(w, "Success", users)
 }
 
 func GetAllUsers(w http.ResponseWriter, r *http.Request) {
