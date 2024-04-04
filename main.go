@@ -13,7 +13,8 @@ import (
 func main() {
 	router := mux.NewRouter()
 
-	router.HandleFunc("/v1/users", controller.GetAllUsers).Methods("GET")
+	router.HandleFunc("/v1/users", controller.Authenticate(controller.GetAllUsers, 1)).Methods("GET")
+	router.HandleFunc("/v1/users/gorm", controller.GetAllUsers).Methods("GET")
 	router.HandleFunc("/v2/users", controller.GetAllUsersGorm).Methods("GET")
 	router.HandleFunc("/v1/users", controller.InsertNewUser).Methods("POST")
 	router.HandleFunc("/v2/users", controller.InsertNewUserGorm).Methods("POST")
@@ -37,7 +38,8 @@ func main() {
 	router.HandleFunc("/v1/usertransactions", controller.GetDetailUserTransactions).Methods("GET")
 	router.HandleFunc("/v1/usertransactionsID", controller.GetDetailUserTransactionsByID).Methods("GET")
 
-	router.HandleFunc("/login", controller.Login).Methods("POST")
+	router.HandleFunc("/login", controller.CheckUserLogin).Methods("POST")
+	router.HandleFunc("/reset", controller.Logout).Methods("DELETE")
 
 	http.Handle("/", router)
 	fmt.Println("Connected to port 8888")

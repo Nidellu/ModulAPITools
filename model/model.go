@@ -12,19 +12,6 @@ type User struct {
 	UserType  int    `json:"user_type"`
 }
 
-type Product struct {
-	ID    int    `json:"id"`
-	Name  string `json:"name"`
-	Price int    `json:"price"`
-}
-
-type Transaction struct {
-	ID        int `json:"id"`
-	UserID    int `json:"userId"`
-	ProductID int `json:"productId"`
-	Quantity  int `json:"quantity"`
-}
-
 type UserResponse struct {
 	Status  int    `json:"status"`
 	Message string `json:"message"`
@@ -37,6 +24,12 @@ type UsersResponse struct {
 	Data    []User `json:"data"`
 }
 
+type Product struct {
+	ID    int    `json:"id"`
+	Name  string `json:"name"`
+	Price int    `json:"price"`
+}
+
 type ProductResponse struct {
 	Status  int     `json:"status"`
 	Message string  `json:"message"`
@@ -47,6 +40,13 @@ type ProductsResponse struct {
 	Status  int       `json:"status"`
 	Message string    `json:"message"`
 	Data    []Product `json:"data"`
+}
+
+type Transaction struct {
+	ID        int `json:"id"`
+	UserID    int `json:"userId"`
+	ProductID int `json:"productId"`
+	Quantity  int `json:"quantity"`
 }
 
 type TransactionResponse struct {

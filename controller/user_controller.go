@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -12,26 +11,34 @@ import (
 )
 
 func CheckUserLogin(w http.ResponseWriter, r *http.Request) {
+
 	db := connect()
 	defer db.Close()
 
-	name := r.URL.Query().Get("name")
-	if name == "" {
-		sendUserErrorResponse(w, "")
+	email := r.URL.Query().Get("email")
+	password := r.URL.Query().Get("password")
+
+	if email == "" || password == "" {
+		sendUserErrorResponse(w, "Bad request: Incomplete input data")
 		return
 	}
 
-	row := db.QueryRow("SELECT * FROM users WHERE name=?", name)
+	query := "SELECT * FROM users WHERE email = ?"
 
 	var user m.User
+	row := db.QueryRow(query, email)
 	if err := row.Scan(&user.ID, &user.Name, &user.Age, &user.Address, &user.Passwords, &user.Email, &user.UserType); err != nil {
-		log.Print(err)
-		sendUserErrorResponse(w, "Error")
-	} else {
-		// user.UserType = 0
-		generateToken(w, user.ID, user.Name, user.UserType)
-		sendSuccessResponse(w)
+		sendUserErrorResponse(w, "Error: Data not found")
+		return
 	}
+
+	if password != user.Passwords {
+		sendUserErrorResponse(w, "Error: Incorrect password")
+		return
+	}
+
+	generateToken(w, user.ID, user.Name, user.UserType)
+	sendSuccessResponse(w)
 }
 
 func Logout(w http.ResponseWriter, r *http.Request) {
@@ -90,7 +97,7 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	var user m.User
 	var users []m.User
 	for rows.Next() {
-		if err := rows.Scan(&user.ID, &user.Name, &user.Age, &user.Address, &user.Passwords, &user.Email); err != nil {
+		if err := rows.Scan(&user.ID, &user.Name, &user.Age, &user.Address, &user.Passwords, &user.Email, &user.UserType); err != nil {
 			log.Println(err)
 			return
 		} else {
@@ -326,56 +333,4 @@ func DeleteUserGorm(w http.ResponseWriter, r *http.Request) {
 	} else {
 		sendUserSuccessResponse(w, "Success", nil)
 	}
-}
-
-func Login(w http.ResponseWriter, r *http.Request) {
-	db := connect()
-	defer db.Close()
-
-	email := r.URL.Query().Get("email")
-	password := r.URL.Query().Get("password")
-
-	if email == "" || password == "" {
-		sendUserErrorResponse(w, "Bad request: Incomplete input data")
-		return
-	}
-
-	var (
-		dbPassword string
-	)
-
-	query := "SELECT passwords FROM users WHERE email = ?"
-	err := db.QueryRow(query, email).Scan(&dbPassword)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			sendUserErrorResponse(w, "Error: Can not find user")
-			return
-		}
-		sendUserErrorResponse(w, "Error: Data not found")
-		return
-	}
-
-	if password != dbPassword {
-		sendUserErrorResponse(w, "Error: Incorrect password")
-		return
-	}
-
-	platform := r.Header.Get("platform")
-	fmt.Fprintf(w, "Success login from %s", platform)
-}
-
-func sendUserSuccessResponse(w http.ResponseWriter, message string, users []m.User) {
-	w.Header().Set("Content-Type", "application/json")
-	var response m.UsersResponse
-	response.Status = 200
-	response.Message = "Success"
-	response.Data = users
-	json.NewEncoder(w).Encode(response)
-}
-func sendUserErrorResponse(w http.ResponseWriter, message string) {
-	w.Header().Set("Content-Type", "application/json")
-	var response m.UserResponse
-	response.Status = 400
-	response.Message = message
-	json.NewEncoder(w).Encode(response)
 }

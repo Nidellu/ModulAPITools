@@ -91,7 +91,7 @@ func validateTokenFromCookies(r *http.Request) (bool, int, string, int) {
 func sendAuthorizedResponse(w http.ResponseWriter) {
 	var response m.UsersResponse
 	response.Status = 401
-	response.Message = "Error ga connect"
+	response.Message = "You're not an admin"
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }
