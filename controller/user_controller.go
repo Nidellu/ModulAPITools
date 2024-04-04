@@ -141,11 +141,15 @@ func InsertNewUser(w http.ResponseWriter, r *http.Request) {
 	}
 	defer data.Rollback()
 
-	_, errQuery := db.Exec("INSERT INTO users (name, age, address) VALUES (?, ?, ?, ?, ?)", name, age, address, passwords, email)
+	_, errQuery := db.Exec("INSERT INTO users (name, age, address, Passwords, email, usertype) VALUES (?, ?, ?, ?, ?, 2)", name, age, address, passwords, email)
 	if errQuery != nil {
 		sendUserErrorResponse(w, "Error: Failed to insert data")
 		return
 	}
+
+	go func() {
+		log.Printf("New user created: %s", name)
+	}()
 
 	if errQuery == nil {
 		sendUserSuccessResponse(w, "Success", nil)

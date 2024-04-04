@@ -13,8 +13,8 @@ import (
 func main() {
 	router := mux.NewRouter()
 
-	router.HandleFunc("/v1/users", controller.Authenticate(controller.GetAllUsers, 1)).Methods("GET")
-	router.HandleFunc("/v1/users/gorm", controller.GetAllUsers).Methods("GET")
+	router.HandleFunc("/v1/users/admin", controller.Authenticate(controller.GetAllUsers, 1)).Methods("GET")
+	router.HandleFunc("/v1/users", controller.GetAllUsers).Methods("GET")
 	router.HandleFunc("/v2/users", controller.GetAllUsersGorm).Methods("GET")
 	router.HandleFunc("/v1/users", controller.InsertNewUser).Methods("POST")
 	router.HandleFunc("/v2/users", controller.InsertNewUserGorm).Methods("POST")
