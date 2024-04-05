@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"modulgo/model"
 
@@ -25,7 +26,7 @@ func GetUsers() []model.User {
 	if err != nil {
 		log.Println(err)
 	}
-	fmt.Println("Succeed Redis")
+	fmt.Println("Check Redis")
 	var users []model.User
 	err = json.Unmarshal([]byte(val), &users)
 	if err != nil {
